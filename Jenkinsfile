@@ -1,9 +1,24 @@
 pipeline {
     agent any
-
-
-stages {
-    stage('dev infrastructure') {
+    tools {
+       terraform 'terraform'
+    }
+    stages {
+        stage('aws credential') {
+            steps {
+                withCredentials([
+                    [
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws-jenkins',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]
+                ]) {
+                    // This block can be left empty or you can add steps that require AWS credentials
+                }
+            }
+        }
+        stage('dev infrastructure') {
         when {
             branch 'dev'
         }
@@ -43,5 +58,5 @@ stages {
 				}
 			}
 		}
-	}
+	}  
 }
